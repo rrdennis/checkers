@@ -143,8 +143,6 @@ class Tile {
   }
 }
 
-// Cached Element References
-
 
 // Event Listeners
 
@@ -177,6 +175,7 @@ function init() {
         let $tile = $('<div></div>');
         color =  j % 2 === 1 ? second : first;
         $tile.addClass(color);
+        $tile.addClass('tile');
         $board.append($tile);
   
         if ((i < 3 || i > 4) && (color === 'black')) {
@@ -201,6 +200,14 @@ function init() {
 }
 
 init();
+
+// Cached Element References
+const blackTiles = $('.black.tile');
+const redTiles = $('.red.tile');
+
+const blackCheckers = $('.black.checker');
+const redCheckers = $('.red.checker');
+
 
 function render() {
   

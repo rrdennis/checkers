@@ -28,6 +28,10 @@ div {
   background-color: black;
 }
 
+.tile {
+  text-align: center;
+}
+
 .checker {
   border: 1px solid white;
   border-radius: 50%;
