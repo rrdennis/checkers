@@ -27,7 +27,7 @@ class Checker {
     this.isKing = false;
     this.isActive = true;
   }
-  move(end, board) {
+  move(end, board, opponent) {
     if (isRedTile(end)) {
       console.log('move() -> "Illegal move!"');
 
@@ -51,6 +51,40 @@ class Checker {
         startTile.occupant = null;
         endTile.occupied = true;
         endTile.occupant = this.color;
+      }
+
+      let blkJumpRowOk = (endRow === startRow + 2);
+      let redJumpRowOk = (endRow === startRow - 2);
+
+      let jumpRowOk = (isBlack) ? blkJumpRowOk : redJumpRowOk;
+      let jumpColsOk = ((endCol === startCol + 2) || (endCol === startCol - 2));
+
+      let jumpOk = (jumpRowOk && jumpColsOk);
+
+      if (jumpOk) {
+        let jumpedRow = (isBlack) ? startRow + 1 : endRow + 1;
+        let jumpedCol = (endCol > startCol) ? startCol + 1 : startCol - 1;
+        
+        let jumpedTile = board[jumpedRow][jumpedCol];
+
+        let isOccupied = jumpedTile.occupied;
+        let occupiedBy = jumpedTile.occupant;
+
+        if (isOccupied && (occupiedBy !== this.color)) {
+          this.position = end;
+          startTile.occupied = false;
+          jumpedTile.occupied = false;
+          endTile.occupied = true;
+
+          opponent.checkers.forEach((checker, i) => {
+            let checkerRow = checker.position[0];
+            let checkerCol = checker.position[1];
+            if (checkerRow === jumpedRow && checkerCol === jumpedCol) {
+              checker.isActive = false;
+              checker.position = [-1, -1];
+            }
+          });
+        }
       }
     }
   }
@@ -180,14 +214,18 @@ const playerTwo = new Player('James', 'red');
 playerOne.placeCheckers(myBoard);
 playerTwo.placeCheckers(myBoard);
 
-const myPiece = playerOne.checkers[8];
-console.log(myPiece.position);
+const onePiece = playerOne.checkers[8];
+console.log(onePiece.position);
 
-myPiece.move([3,0], myBoard);
-console.log(myPiece.position);
+onePiece.move([3,0], myBoard);
+console.log(onePiece.position);
 
-const myOtherPiece = playerTwo.checkers[0];
-console.log(myOtherPiece.position);
+onePiece.move([4,1], myBoard);
+console.log(onePiece.position);
 
-myOtherPiece.move([4,1], myBoard);
-console.log(myOtherPiece.position);
+const twoPiece = playerTwo.checkers[0];
+console.log(twoPiece.position);
+
+twoPiece.move([3,2], myBoard, playerOne);
+console.log(twoPiece.position);
+console.log(playerOne.checkers);
