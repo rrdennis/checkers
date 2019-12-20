@@ -129,7 +129,7 @@ function isRedTile(position) {
 }
 
 function init() {
-  $(document).ready(function () {
+
     const $board = $('.board');
   
     let first = 'black';
@@ -145,7 +145,7 @@ function init() {
         $tile.addClass(color);
         $board.append($tile);
   
-        if ((i < 3 || i > 4) && color === 'black') {
+        if ((i < 3 || i > 4) && (color === 'black')) {
           let $checker = $('<div></div>');
           color = i < 3 ? 'black' : i > 4 ? 'red' : {};
           $checker.addClass(color);
@@ -155,21 +155,15 @@ function init() {
       }
     }
   
-  
     $board.on('click', function(e) { // user clicks on board
       let $selected = $(e.target); // tile (div) or checker
   
       if ($selected.hasClass('checker')) { // checker actions...
         $selected.toggleClass('float'); // pick up/put down a checker
-        
-        
 
-  
       }
-  
     });
-  
-  });
+
 }
 
 init();
