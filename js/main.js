@@ -1,28 +1,133 @@
-/*----- constants -----*/
-const numSqs = null;
+// Constants
+function makeCheckerBoard() {
+  const checkerBoard = [];
 
-/*----- app's state (variables) -----*/
-// position of every checker
-// selected chip
-const boardState = {};
-const selectedChip = null;
-
-/*----- cached element references -----*/
-// for loop
-//   grab spaces (32 legal)
-
-
-/*----- event listeners -----*/
-// function handleSelect() {
+  let first = 'black';
+  let second = 'red';
+  let color;
   
-// }
+  for (let i = 0; i < 8; i++) {
+    checkerBoard.push([]);
+    [first, second] = [second, first];
 
-// function handleMove() {
+    for (let j = 0; j < 8; j++) {
+      color = (j % 2 === 1) ? second : first;
+      let tile = new Tile([i, j], color);
+      checkerBoard[i][j] = tile;
+    }
+  }
+  return checkerBoard;
+}
 
-// }
+// Application State (variables)
+class Checker {
+  constructor(color) {
+    this.color = color;
+    this.position = null;
+    this.isKing = false;
+    this.isActive = true;
+  }
+  move(end, board) {
+    if (isRedTile(end)) {
+      console.log('move() -> "Illegal move!"');
+
+    } else {
+      let [startRow, startCol] = this.position;
+      let [endRow, endCol] = end;
+
+      let isBlack = this.color === 'black';
+
+      let startTile = board[startRow][startCol];
+      let endTile = board[endRow][endCol];
+
+      let blackMvRowOk = (endRow === startRow + 1);
+      let redMvRowOk = (endRow === startRow - 1);
+
+      let moveOk = isBlack ? blackMvRowOk : redMvRowOk;
+
+      if (moveOk) {
+        this.position = end;
+        startTile.occupied = false;
+        startTile.occupant = null;
+        endTile.occupied = true;
+        endTile.occupant = this.color;
+      }
+    }
+  }
+  remove() {
+
+  }
+  jump() {
+
+  }
+  crown() {
+    
+  }
+}
+
+class Player {
+  constructor(name, color) {
+    this.name = name;
+    this.color = color;
+    this.checkers = [];
+    for (let i = 0; i < 12; i++) {
+      this.checkers[i] = new Checker(color);
+    }
+  }
+  placeCheckers(board) {
+    let starts = [];
+    const blackStarts = [
+      [0,1], [0,3], [0,5], [0,7],
+      [1,0], [1,2], [1,4], [1,6],
+      [2,1], [2,3], [2,5], [2,7]
+    ];
+    const redStarts = [
+      [5,0], [5,2], [5,4], [5,6],
+      [6,1], [6,3], [6,5], [6,7],
+      [7,0], [7,2], [7,4], [7,6]
+    ];
+    let arr = this.color === 'black' ? blackStarts : redStarts;
+    arr.forEach(start => starts.push(start));
+
+    this.checkers.forEach((checker, i) => {
+      checker.position = starts[i]; // [0,1]
+      let row = starts[i][0];
+      let col = starts[i][1];
+      let tile = board[row][col];
+      tile.occupied = true;
+      tile.occupant = checker.color;
+    });
+  }
+}
+
+class Tile {
+  constructor(position, color) {
+    this.position = position;
+    this.color = color;
+    this.occupied = false;
+    this.occupant = null;
+  }
+}
+
+// Cached Element References
 
 
-/*----- functions -----*/
+// Event Listeners
+
+
+// Functions
+function isRedTile(position) {
+
+  const isEven = n => n % 2 === 0;
+
+  const [row, col] = position;
+
+  let rowColEven = isEven(row) && isEven(col);
+  let rowColOdd = !isEven(row) && !isEven(col);
+  
+  return rowColEven || rowColOdd;
+}
+
 function init() {
   $(document).ready(function () {
     const $board = $('.board');
@@ -70,5 +175,25 @@ function init() {
 init();
 
 function render() {
-
+  
 }
+
+const myBoard = makeCheckerBoard();
+
+const playerOne = new Player('Ryan', 'black');
+const playerTwo = new Player('James', 'red');
+
+playerOne.placeCheckers(myBoard);
+playerTwo.placeCheckers(myBoard);
+
+const myPiece = playerOne.checkers[8];
+console.log(myPiece.position);
+
+myPiece.move([3,0], myBoard);
+console.log(myPiece.position);
+
+const myOtherPiece = playerTwo.checkers[0];
+console.log(myOtherPiece.position);
+
+myOtherPiece.move([4,1], myBoard);
+console.log(myOtherPiece.position);
